@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AI Code Review Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main>
+    <h1>AI Code Review Assistant</h1>
+    <p class="subtitle">Paste a code snippet or diff. Get back bugs, security issues, and style problems with suggested fixes.</p>
+
+    <textarea id="code-input" placeholder="Paste code here..." spellcheck="false"></textarea>
+
+    <button id="review-btn">Review Code</button>
+
+    <div id="status" role="status"></div>
+    <ul id="results"></ul>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
