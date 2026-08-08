@@ -33,6 +33,15 @@ Running record of every meaningful decision made during the build, in order. Thi
 | 9.0–10.5 | Polish, README, AGENTS_AND_SKILLS.md |
 | 10.5–12.0 | Buffer, demo capture, tag v1.0.0 |
 
+## 2026-08-08 — API key & model troubleshooting
+
+- First Gemini key generated had `limit: 0` on all free-tier quota metrics for `gemini-2.0-flash` — authenticated fine (not a bad key), but the backing Google Cloud project had no free-tier allocation for that model. Confirmed via direct API call before writing any app-side workarounds, to rule out an app bug first.
+- A second, freshly-generated key still hit `limit: 0` specifically on `gemini-2.0-flash`, but `gemini-flash-latest` on the same key returned 200. Free-tier availability is inconsistent per-model per-account on Gemini right now — **fix was switching the model, not the key.**
+  - Why this matters for judges/Day 2: if the model choice breaks again, the fix is a one-line change in `server/agents/codeReviewAgent.ts` (`GEMINI_MODEL` constant) — isolating the model name as a constant instead of inlining it into the fetch call was a deliberate small design choice for exactly this kind of churn.
+- Found and fixed a real bug during this: `server/index.ts` never actually loaded `.env` — there was no `dotenv.config()` call, so `GEMINI_API_KEY` was always `undefined` locally regardless of what was in `.env`. Added the `dotenv` package and a `dotenv.config()` call at the top of the entrypoint.
+- Increased the Playwright LLM test timeout from 20s to 40s (with `test.setTimeout(60000)`) — `gemini-flash-latest` returns `thoughtSignature` in its response, indicating it does some internal reasoning before answering, which takes longer than a non-reasoning model. Real network+LLM latency, not a flaky test.
+- `GEMINI_API_KEY` set as a GitHub Actions repository secret (`gh secret set`) so CI's Playwright test — which makes a real LLM call — can pass, not just locally.
+
 ## Open risks
 
 - Gemini free-tier rate limits under demo conditions — mitigation: keep prompt/response small, no retries-in-a-loop.
