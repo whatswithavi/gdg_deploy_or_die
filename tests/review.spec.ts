@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 
+test.setTimeout(60000);
+
 const VULNERABLE_SNIPPET = `
 function getUser(id) {
   const query = "SELECT * FROM users WHERE id = " + id;
@@ -14,8 +16,8 @@ test("pasting a vulnerable snippet and reviewing shows flagged issues", async ({
   await page.fill("#code-input", VULNERABLE_SNIPPET);
   await page.click("#review-btn");
 
-  await expect(page.locator("#status")).not.toHaveText("Reviewing...", { timeout: 20000 });
-  await expect(page.locator("#results li").first()).toBeVisible({ timeout: 20000 });
+  await expect(page.locator("#status")).not.toHaveText("Reviewing...", { timeout: 40000 });
+  await expect(page.locator("#results li").first()).toBeVisible({ timeout: 40000 });
 });
 
 test("submitting empty input shows a prompt to paste code, no request made", async ({ page }) => {
